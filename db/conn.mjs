@@ -12,5 +12,12 @@ try {
 }
 
 let db = conn.db("FormResponses");
+// async function listCollections(databaseName) {
+//   const database = client.db(databaseName);
+//   const collections = await database.listCollections().toArray();
+//   console.log(`Collections in ${database.databaseName}:`);
+//   collections.forEach(collection => console.log(` - ${collection.name}`));
+// }
 
+// await listCollections("FormResponses")
 export default db;
