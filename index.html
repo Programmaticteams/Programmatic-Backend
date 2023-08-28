@@ -1,112 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Input</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Form</title>
 </head>
-
 <body>
-    <h1>Submit Form</h1>
-    <form id="inputForm">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
+  <div id="login-form">
+    <h1>Login</h1>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="login-btn">Login</button>
+    <p id="message"></p>
+  </div>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
+  <script>
+    const loginButton = document.getElementById('login-btn');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const messageElement = document.getElementById('message');
+    loginButton.addEventListener('click', async () => {
+      const user = usernameInput.value;
+      const pwd = passwordInput.value;
 
-        <label>Class:</label><br>
-        <input type="radio" id="message1" name="message" value="Pico" required>
-        <label for="message1">Pico</label><br>
+      const response = await fetch('http://localhost:5050/form/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ user, pwd })
+      });
 
-        <input type="radio" id="message2" name="message" value="PyBasic" required>
-        <label for="message2">Python Basic</label><br>
-
-        <input type="radio" id="message3" name="message" value="PyAdv" required>
-        <label for="message3">Python Advanced</label><br>
-
-        <input type="radio" id="message4" name="message" value="Scratch" required>
-        <label for="message1">Scratch</label><br>
-
-        <input type="radio" id="message5" name="message" value="Unity" required>
-        <label for="message1">Unity</label><br>
-
-        <br>
-        <button type="submit">Submit</button>
-    </form>
-
-    <script>
-        const form = document.getElementById('inputForm');
-
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const enrolled = document.querySelector('input[name="message"]:checked').value;
-            const response = await fetch('http://localhost:5050/form/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name, email, enrolled })
-            });
-
-            if (response.status === 204) {
-                alert('Form submitted successfully!');
-                fetchData()
-                form.reset();
-            } else {
-                alert('Failed to submit form.');
-            }
-        });
-    </script>
-    <h1>Fetched Data</h1>
-    <ul id="dataList"></ul>
-
-
-    <script>
-        const dataList = document.getElementById('dataList');
-
-        // Function to delete an entry
-        async function deleteEntry(id) {
-            const response = await fetch(`http://localhost:5050/form/${id}`, {
-                method: 'DELETE'
-            });
-
-            if (response.status === 200) {
-                fetchData(); // Refresh the data after deletion
-            } else {
-                alert('Failed to delete entry.');
-            }
-        }
-
-        // Function to fetch and display data
-
-        async function fetchData() {
-            const response = await fetch('http://localhost:5050/form/');
-            const data = await response.json();
-
-            dataList.innerHTML = ''; // Clear previous data
-            data.forEach(entry => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `Name: ${entry.name}, Email: ${entry.email}, Message: ${entry.enrolled}`;
-
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Delete';
-                deleteButton.addEventListener('click', function () {
-                    deleteEntry(entry._id); // Pass the ID to deleteEntry function
-                });
-
-                listItem.appendChild(deleteButton);
-                dataList.appendChild(listItem);
-            });
-        }
-
-
-        fetchData(); // Fetch data when the page loads
-    </script>
+      if (response.status === 200) {
+        messageElement.textContent = 'Login successful';
+        usernameInput.value="";
+        passwordInput.value="";
+      } else {
+        messageElement.textContent = 'Login failed. Please check your credentials.';
+        passwordInput.value="";
+      }
+    });
+  </script>
 </body>
-
 </html>
